@@ -15,8 +15,7 @@ stages:
              inputs:
                mavenPomFile: 'pom.xml'
                goals: 'test'
-               publishJUnitResults: true
-               testResultsFiles: '**/surefire-reports/TEST-*.xml'
+               publishJUnitResults: false
                codeCoverageToolOption: 'JaCoCo'
                codeCoverageFailIfEmpty: true
                javaHomeOption: 'JDKVersion'
