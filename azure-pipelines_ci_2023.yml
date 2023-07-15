@@ -27,7 +27,7 @@ stages:
             
            - task: PublishCodeCoverageResults@2
              inputs:
-               summaryFileLocation: '(System.DefaultWorkingDirectory)/surefire-reports/TEST-*.xml'
+               summaryFileLocation: '$(System.DefaultWorkingDirectory)/surefire-reports/TEST-*.xml'
 
            - task: BuildQualityChecks@9
              inputs:
@@ -35,3 +35,4 @@ stages:
                 coverageFailOption: 'fixed'
                 coverageType: 'lines'
                 coverageThreshold: '85'
+           
