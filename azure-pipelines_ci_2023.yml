@@ -27,7 +27,7 @@ stages:
             
            - task: PublishCodeCoverageResults@2
              inputs:
-               summaryFileLocation: '$(System.DefaultWorkingDirectory)/index.htmltarget/site/jacoco/'
+               summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/index.html'
                pathToSources: '$(System.DefaultWorkingDirectory)/src/main/java/**'
 
            - task: BuildQualityChecks@9
