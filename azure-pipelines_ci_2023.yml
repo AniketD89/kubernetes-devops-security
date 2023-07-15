@@ -24,6 +24,10 @@ stages:
                mavenAuthenticateFeed: false
                effectivePomSkip: false
                sonarQubeRunAnalysis: false
+            
+           - task: PublishCodeCoverageResults@2
+             inputs:
+               summaryFileLocation: '(System.DefaultWorkingDirectory)/surefire-reports/TEST-*.xml'
 
            - task: BuildQualityChecks@9
              inputs:
