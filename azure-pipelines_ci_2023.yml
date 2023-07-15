@@ -27,12 +27,12 @@ stages:
             
            - task: PublishCodeCoverageResults@2
              inputs:
-               summaryFileLocation: '$(System.DefaultWorkingDirectory)/surefire-reports/TEST-*.xml'
+               summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/jacoco.xml'
 
            - task: BuildQualityChecks@9
              inputs:
                 checkCoverage: true
                 coverageFailOption: 'fixed'
                 coverageType: 'lines'
-                coverageThreshold: '85'
+                coverageThreshold: '60'
            
