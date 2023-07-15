@@ -24,6 +24,12 @@ stages:
                mavenAuthenticateFeed: false
                effectivePomSkip: false
                sonarQubeRunAnalysis: false
+
+           - task: PublishTestResults@2
+             inputs:
+               testResultsFormat: 'JUnit'
+               testResultsFiles: '**/surefire-reports/TEST-*.xml'
+               failTaskOnFailedTests: true
             
            
            - task: BuildQualityChecks@9
