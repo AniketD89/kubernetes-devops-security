@@ -27,7 +27,7 @@ stages:
             
            - task: PublishCodeCoverageResults@2
              inputs:
-               summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/jacoco.xml'
+               summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/**/*html'
 
            - task: BuildQualityChecks@9
              inputs:
