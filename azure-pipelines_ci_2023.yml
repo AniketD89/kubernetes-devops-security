@@ -31,7 +31,7 @@ stages:
            - task: Maven@4
              inputs:
                mavenPomFile: 'pom.xml'
-               goals: 'validate'
+               goals: 'compile'
                publishJUnitResults: false
                javaHomeOption: 'JDKVersion'
                mavenVersionOption: 'Default'
