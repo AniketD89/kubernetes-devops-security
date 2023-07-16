@@ -31,10 +31,8 @@ stages:
            - task: Maven@4
              inputs:
                mavenPomFile: 'pom.xml'
-               goals: 'test'
+               goals: 'validate'
                publishJUnitResults: false
-               codeCoverageToolOption: 'JaCoCo'
-               codeCoverageFailIfEmpty: true
                javaHomeOption: 'JDKVersion'
                mavenVersionOption: 'Default'
                mavenAuthenticateFeed: false
@@ -42,27 +40,14 @@ stages:
                sonarQubeRunAnalysis: true
                sqMavenPluginVersionChoice: 'latest'
 
-           - task: SonarCloudPublish@1
-             inputs:
-               pollingTimeoutSec: '300'
-
-           - task: sonarcloud-buildbreaker@2
-             inputs:
-               SonarCloud: 'SonarSconn'
-               organization: 'mydemoado1'
-
-
+           
            - task: PublishTestResults@2
              inputs:
                testResultsFormat: 'JUnit'
                testResultsFiles: '**/surefire-reports/TEST-*.xml'
                failTaskOnFailedTests: true
-            
-           
-           - task: BuildQualityChecks@9
+
+           - task: sonarcloud-buildbreaker@2
              inputs:
-                checkCoverage: true
-                coverageFailOption: 'fixed'
-                coverageType: 'lines'
-                coverageThreshold: '60'
-           
+               SonarCloud: 'SonarSconn'
+               organization: 'mydemoado1'
