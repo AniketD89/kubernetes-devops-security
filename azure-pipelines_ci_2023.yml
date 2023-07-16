@@ -11,6 +11,31 @@ stages:
       -  job: "Build"
          displayName: "Build Webapp"
          steps:
+
+           - task: SonarCloudPrepare@1
+             inputs:
+               SonarCloud: 'SonarSconn'
+               organization: 'mydemoado1'
+               scannerMode: 'Other'
+               extraProperties: |
+                 # Additional properties that will be passed to the scanner, 
+                 # Put one key=value per line, example:
+                 # sonar.exclusions=**/*.bin
+                 
+                 sonar.projectKey=MyDemoADO_SpringBoot-NodeJs
+                 sonar.projectName=SpringBoot-NodeJs
+                 sonar.scanner.metadataFilePath=$(Agent.TempDirectory)/sonar/$(Build.BuildNumber)/test/report-task.txt
+                
+              
+           - task: SonarCloudAnalyze@1
+             inputs:
+               jdkversion: 'JAVA_HOME_11_X64'
+            
+           
+           - task: SonarCloudPublish@1
+             inputs:
+               pollingTimeoutSec: '300'
+
            - task: Maven@4
              inputs:
                mavenPomFile: 'pom.xml'
