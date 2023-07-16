@@ -48,6 +48,11 @@ stages:
                testResultsFiles: '**/surefire-reports/TEST-*.xml'
                failTaskOnFailedTests: true
 
+
+           - task: SonarCloudPublish@1
+             inputs:
+               pollingTimeoutSec: '300'
+
            - task: sonarcloud-buildbreaker@2
              inputs:
                SonarCloud: 'SonarSconn'
