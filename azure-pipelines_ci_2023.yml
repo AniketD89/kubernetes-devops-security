@@ -6,13 +6,14 @@ pool:
 
 stages:
   - stage: "Build"
-    displayName: "Build App"
+    displayName: "Build"
     jobs:
-      -  job: "Build"
-         displayName: "Build Webapp"
+      -  job: "BuildApp"
+         displayName: "Build App"
          steps:
 
            - task: SonarCloudPrepare@1
+             displayName: "SonarCloud Analysis Preparation"
              inputs:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
@@ -29,9 +30,10 @@ stages:
               
 
            - task: Maven@4
+             displayName: "Maven Test with Junit and Code Coverage with JaCoCo"
              inputs:
                mavenPomFile: 'pom.xml'
-               goals: 'test'
+               goals: 'clean test'
                publishJUnitResults: false
                codeCoverageToolOption: 'JaCoCo'
                javaHomeOption: 'JDKVersion'
@@ -43,6 +45,7 @@ stages:
 
            
            - task: PublishTestResults@2
+             displayName: "Publish Unit Test Results"
              inputs:
                testResultsFormat: 'JUnit'
                testResultsFiles: '**/surefire-reports/TEST-*.xml'
@@ -50,10 +53,12 @@ stages:
 
 
            - task: SonarCloudPublish@1
+             displayName: "SonarCloud Quality Gate Result"
              inputs:
                pollingTimeoutSec: '300'
 
            - task: sonarcloud-buildbreaker@2
+             displayName: "Build Breaker if QG fails"
              inputs:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
