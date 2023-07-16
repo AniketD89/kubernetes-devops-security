@@ -46,6 +46,12 @@ stages:
              inputs:
                pollingTimeoutSec: '300'
 
+           - task: sonarcloud-buildbreaker@2
+             inputs:
+               SonarCloud: 'SonarSconn'
+               organization: 'mydemoado1'
+
+
            - task: PublishTestResults@2
              inputs:
                testResultsFormat: 'JUnit'
