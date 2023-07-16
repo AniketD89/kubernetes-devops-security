@@ -62,3 +62,13 @@ stages:
              inputs:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
+
+  - stage: "Deployment"
+    displayName: "Deployment"
+    jobs:
+      - job: "Test_Deployment"
+        displayName: "Deployment to Test Env"
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: 'echo Test Env'
