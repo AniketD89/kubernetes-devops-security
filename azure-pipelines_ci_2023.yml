@@ -33,6 +33,7 @@ stages:
                mavenPomFile: 'pom.xml'
                goals: 'test'
                publishJUnitResults: false
+               codeCoverageToolOption: 'JaCoCo'
                javaHomeOption: 'JDKVersion'
                mavenVersionOption: 'Default'
                mavenAuthenticateFeed: false
