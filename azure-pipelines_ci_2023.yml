@@ -53,7 +53,7 @@ stages:
              inputs:
                targetType: 'inline'
                script: |
-                   [xml]$xml= Get-Content $(Build.ArtifactStagingDirectory)/**/surefire-reports/TEST-*.xml
+                   [xml]$xml= Get-Content $(Build.ArtifactStagingDirectory)\**\surefire-reports\TEST-*.xml
                  
                     $tests= $xml.testsuite.tests
                     $failures= $xml.testsuite.failures
