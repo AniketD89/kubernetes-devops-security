@@ -42,19 +42,18 @@ stages:
                sonarQubeRunAnalysis: true
                sqMavenPluginVersionChoice: 'latest'
 
-           
+           - task: CopyFiles@2
+             inputs:
+               SourceFolder: '$(System.DefaultWorkingDirectory)'
+               Contents: '**/surefire-reports'
+               TargetFolder: '$(Build.ArtifactStagingDirectory)' 
+
            - task: PublishTestResults@2
              displayName: "Publish Unit Test Results"
              inputs:
                testResultsFormat: 'JUnit'
                testResultsFiles: '**/surefire-reports/TEST-*.xml'
                failTaskOnFailedTests: true
-
-           - task: CopyFiles@2
-             inputs:
-               SourceFolder: '$(System.DefaultWorkingDirectory)'
-               Contents: '**/surefire-reports'
-               TargetFolder: '$(Build.ArtifactStagingDirectory)' 
 
 
            - task: SonarCloudPublish@1
@@ -89,7 +88,7 @@ stages:
 
            - task: PublishBuildArtifacts@1
              inputs:
-               PathtoPublish: '$(Build.ArtifactStagingDirectory)/target'
+               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
                ArtifactName: 'drop'
                publishLocation: 'Container'
 
@@ -105,12 +104,11 @@ stages:
         steps:
           
           - task: ManualValidation@0
-            timeoutInMinutes: 60
+            timeoutInMinutes: 1
             displayName: "Deployment Validation"
             inputs:
               notifyUsers: 'aniket.p.deshmukh@gmail.com'
               instructions: 'Please validate the build $(Build.BuildId) configuration and resume'
-              onTimeout: 'resume'
 
 
       - job: "Test_Deployment"
