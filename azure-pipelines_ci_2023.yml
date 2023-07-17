@@ -55,11 +55,17 @@ stages:
                script: |
                  [xml]$xml= Get-Content $(build.artifactstagingdirectory)\target\surefire-reports\TEST-com.devsecops.NumericApplicationTests.xml
                  
-                 
                  $failures= $xml.testsuite.failures
                  $tests= $xml.testsuite.tests
                  
                  $passpercent=[Math]::Abs(($failures/$tests - 1)*100)
+                 
+                 $passpercent
+                 
+                 If($passpercent -lt 110)
+                 {
+                 Write-host "Threshold Breached"
+                 }
                  
 
            - task: PublishTestResults@2
