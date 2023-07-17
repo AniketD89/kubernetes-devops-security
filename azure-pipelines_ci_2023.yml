@@ -50,6 +50,12 @@ stages:
                testResultsFiles: '**/surefire-reports/TEST-*.xml'
                failTaskOnFailedTests: true
 
+           - task: CopyFiles@2
+             inputs:
+               SourceFolder: '$(System.DefaultWorkingDirectory)'
+               Contents: '**/surefire-reports'
+               TargetFolder: '$(Build.ArtifactStagingDirectory)' 
+
 
            - task: SonarCloudPublish@1
              displayName: "SonarCloud Quality Gate Result"
