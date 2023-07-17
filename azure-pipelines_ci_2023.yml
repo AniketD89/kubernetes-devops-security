@@ -50,23 +50,32 @@ stages:
 
 
            - task: PowerShell@2
+             displayName: "Check Test Pass Percentage"
              inputs:
                targetType: 'inline'
                script: |
                  [xml]$xml= Get-Content $(build.artifactstagingdirectory)\target\surefire-reports\TEST-com.devsecops.NumericApplicationTests.xml
-                 
                  $failures= $xml.testsuite.failures
                  $tests= $xml.testsuite.tests
-                 
                  $passpercent=[Math]::Abs(($failures/$tests - 1)*100)
                  
                  $passpercent
                  
-                 If($passpercent -lt 110)
+                 If($passpercent -lt 101)
                  {
-                 Write-host "Threshold Breached"
+                 Write-host "Threshold Breached.Exit 1"
+                 EXIT 1
                  }
                  
+
+           - task: BuildQualityChecks@9
+             displayName: "Check Code Coverage Percentage"
+             inputs:
+               checkCoverage: true
+               coverageFailOption: 'fixed'
+               coverageType: 'lines'
+               coverageThreshold: '60'
+
 
            - task: PublishTestResults@2
              displayName: "Publish Unit Test Results"
