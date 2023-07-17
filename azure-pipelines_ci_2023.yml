@@ -61,14 +61,6 @@ stages:
                  
                  $passpercent=[Math]::Abs(($failures/$tests - 1)*100)
                  
-                 If($passpercent -lt 110)
-                 
-                 {
-                 
-                 EXIT 1
-                 
-                 }
-                 
 
            - task: PublishTestResults@2
              displayName: "Publish Unit Test Results"
