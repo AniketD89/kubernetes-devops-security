@@ -45,7 +45,7 @@ stages:
            - task: CopyFiles@2
              inputs:
                SourceFolder: '$(System.DefaultWorkingDirectory)'
-               Contents: '**/surefire-reports'
+               Contents: '**/surefire-reports/TEST-*.xml'
                TargetFolder: '$(Build.ArtifactStagingDirectory)' 
 
            - task: PublishTestResults@2
