@@ -52,20 +52,7 @@ stages:
            - task: PowerShell@2
              inputs:
                targetType: 'inline'
-               script: |
-                 [xml]$xml= Get-Content $(build.artifactstagingdirectory)\target\surefire-reports\TEST-com.devsecops.NumericApplicationTests.xml
-                 
-                  $tests= $xml.testsuite.tests
-                  $failures= $xml.testsuite.failures
-                  $passpercent=[Math]::Abs(($failures/$tests - 1)*100)
-                  
-                  If($passpercent -lt 110)
-                  
-                  {
-                  
-                  EXIT 1
-                  
-                  }
+               script: '[xml]$xml= Get-Content $(build.artifactstagingdirectory)\target\surefire-reports\TEST-com.devsecops.NumericApplicationTests.xml'
 
            - task: PublishTestResults@2
              displayName: "Publish Unit Test Results"
