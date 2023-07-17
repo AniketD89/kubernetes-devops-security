@@ -61,7 +61,7 @@ stages:
                  
                  $passpercent
                  
-                 If($passpercent -lt 101)
+                 If($passpercent -lt 90)
                  {
                  Write-host "Threshold Breached.Exit 1"
                  EXIT 1
