@@ -3,7 +3,6 @@ trigger: 'none'
 pool:
   vmImage: ubuntu-latest
 
-
 stages:
   - stage: "Build"
     displayName: "Build"
@@ -62,8 +61,22 @@ stages:
              inputs:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
+           
+           - task: Maven@4
+             displayName: "Package it in its distributable format"
+             inputs:
+               mavenPomFile: 'pom.xml'
+               goals: 'clean package'
+               publishJUnitResults: false
+               javaHomeOption: 'JDKVersion'
+               mavenVersionOption: 'Default'
+               mavenAuthenticateFeed: false
+               effectivePomSkip: false
+               sonarQubeRunAnalysis: false
+
 
   - stage: "Deployment"
+    dependsOn: "Build"
     displayName: "Deployment"
     jobs:
       - job: "Test_Deployment"
