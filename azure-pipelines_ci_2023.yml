@@ -108,6 +108,7 @@ stages:
 
       - job: "Test_Deployment"
         displayName: "Deployment to Test Env"
+        dependsOn: "Approval"
         steps:
           - task: CmdLine@2
             inputs:
