@@ -52,7 +52,10 @@ stages:
            - task: PowerShell@2
              inputs:
                targetType: 'inline'
-               script: '[xml]$xml= Get-Content -Path $(build.artifactstagingdirectory)\target\surefire-reports\TEST-com.devsecops.NumericApplicationTests.xml'
+               script: |
+                 [xml]$xml= Get-Content -Path $(build.artifactstagingdirectory)\target\surefire-reports\TEST-com.devsecops.NumericApplicationTests.xml
+                 
+                 $xml
 
            - task: PublishTestResults@2
              displayName: "Publish Unit Test Results"
