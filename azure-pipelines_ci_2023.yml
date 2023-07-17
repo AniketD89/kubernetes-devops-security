@@ -67,6 +67,7 @@ stages:
              inputs:
                mavenPomFile: 'pom.xml'
                goals: 'clean package'
+               options: '-DskipTests=true'
                publishJUnitResults: false
                javaHomeOption: 'JDKVersion'
                mavenVersionOption: 'Default'
