@@ -90,6 +90,22 @@ stages:
     dependsOn: "Build"
     displayName: "Deployment"
     jobs:
+      
+
+      - job: "Approval"
+        pool: server
+
+        steps:
+          
+          - task: ManualValidation@0
+            timeoutInMinutes: 60
+            displayName: "Deployment Validation"
+            inputs:
+              notifyUsers: 'aniket.p.deshmukh@gmail.com'
+              instructions: 'Please validate the build $(Build.BuildId) configuration and resume'
+              onTimeout: 'resume'
+
+
       - job: "Test_Deployment"
         displayName: "Deployment to Test Env"
         steps:
