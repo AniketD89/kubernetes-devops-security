@@ -7,8 +7,8 @@ stages:
   - stage: "Build"
     displayName: "Build"
     jobs:
-      -  job: "BuildApp"
-         displayName: "Build App"
+      -  job: "Test"
+         displayName: "Test App"
          steps:
 
            - task: SonarCloudPrepare@1
@@ -96,9 +96,14 @@ stages:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
            
-           - task: Maven@4
-             displayName: "Package it in its distributable format"
-             inputs:
+           
+
+      - job: "Package"
+        displayName: "Package into .war file"
+        steps:
+          - task: Maven@4
+            displayName: "Package it in its distributable format"
+            inputs:
                mavenPomFile: 'pom.xml'
                goals: 'clean package'
                options: '-DskipTests=true'
@@ -109,22 +114,22 @@ stages:
                effectivePomSkip: false
                sonarQubeRunAnalysis: false
 
-           - task: CopyFiles@2
-             inputs:
+          - task: CopyFiles@2
+            inputs:
                SourceFolder: '$(System.DefaultWorkingDirectory)'
                Contents: '**/numeric-0.0.1.jar'
                TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-           - task: PublishBuildArtifacts@1
-             inputs:
-               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          - task: PublishBuildArtifacts@1
+            inputs:
+               PathtoPublish: '$(Build.ArtifactStagingDirectory)/target'
                ArtifactName: 'drop'
                publishLocation: 'Container'
 
-           - task: UniversalPackages@0
-             inputs:
+          - task: UniversalPackages@0
+            inputs:
                command: 'publish'
-               publishDirectory: '$(Build.ArtifactStagingDirectory)/target/numeric*'
+               publishDirectory: '$(Build.ArtifactStagingDirectory)/target/'
                feedsToUsePublish: 'internal'
                vstsFeedPublish: '545dde5f-5bea-4cde-8e74-74e78a4710b3/337d99bd-18b3-4cd6-984f-b3c7f5ef2812'
                vstsFeedPackagePublish: 'numeric.jar'
