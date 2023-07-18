@@ -1,0 +1,17 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: DockerInstaller@0
+  inputs:
+    dockerVersion: '17.09.0-ce'
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
+      docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 1 --severity CRITICAL --light $imagename
+
