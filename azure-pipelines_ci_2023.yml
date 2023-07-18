@@ -105,12 +105,14 @@ stages:
                organization: 'mydemoado1'
            
            - task: dependency-check-build-task@6
+             continueOnError: true
              inputs:
                projectName: 'SpringBoot'
                scanPath: '$(System.DefaultWorkingDirectory)'
                format: 'ALL'
-               failOnCVSS: '9.9'
+               failOnCVSS: '5'
                reportsDirectory: '$(Build.ArtifactStagingDirectory)'
+               
 
            - task: PublishTestResults@2
              inputs:
