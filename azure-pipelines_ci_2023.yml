@@ -13,7 +13,7 @@ stages:
 
            - task: SonarCloudPrepare@1
              displayName: "SonarCloud Analysis Preparation"
-             enabled: false
+             enabled: true
              inputs:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
@@ -31,7 +31,7 @@ stages:
 
            - task: Maven@4
              displayName: "Maven Test with Junit and Code Coverage with JaCoCo"
-             enabled: false
+             enabled: true
              inputs:
                mavenPomFile: 'pom.xml'
                goals: 'clean test'
@@ -45,7 +45,7 @@ stages:
                sqMavenPluginVersionChoice: 'latest'
 
            - task: CopyFiles@2
-             enabled: false
+             enabled: true
              inputs:
                SourceFolder: '$(System.DefaultWorkingDirectory)'
                Contents: '**/surefire-reports/TEST-*.xml'
@@ -53,7 +53,7 @@ stages:
 
 
            - task: PowerShell@2
-             enabled: false
+             enabled: true
              displayName: "Check Test Pass Percentage"
              inputs:
                targetType: 'inline'
@@ -73,7 +73,7 @@ stages:
                  
 
            - task: BuildQualityChecks@9
-             enabled: false
+             enabled: true
              displayName: "Check Code Coverage Percentage"
              inputs:
                checkCoverage: true
@@ -83,7 +83,7 @@ stages:
 
 
            - task: PublishTestResults@2
-             enabled: false
+             enabled: true
              displayName: "Publish Unit Test Results"
              inputs:
                testResultsFormat: 'JUnit'
@@ -92,13 +92,13 @@ stages:
 
 
            - task: SonarCloudPublish@1
-             enabled: false
+             enabled: true
              displayName: "SonarCloud Quality Gate Result"
              inputs:
                pollingTimeoutSec: '300'
 
            - task: sonarcloud-buildbreaker@2
-             enabled: false
+             enabled: true
              displayName: "Build Breaker if QG fails"
              inputs:
                SonarCloud: 'SonarSconn'
@@ -153,21 +153,21 @@ stages:
                sonarQubeRunAnalysis: false
 
           - task: CopyFiles@2
-            enabled: false
+            enabled: true
             inputs:
                SourceFolder: '$(System.DefaultWorkingDirectory)'
                Contents: '**/numeric-0.0.1.jar'
                TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
           - task: PublishBuildArtifacts@1
-            enabled: false
+            enabled: true
             inputs:
                PathtoPublish: '$(Build.ArtifactStagingDirectory)/target'
                ArtifactName: 'drop'
                publishLocation: 'Container'
 
           - task: UniversalPackages@0
-            enabled: false
+            enabled: true
             inputs:
                command: 'publish'
                publishDirectory: '$(Build.ArtifactStagingDirectory)/target/'
