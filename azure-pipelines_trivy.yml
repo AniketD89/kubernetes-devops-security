@@ -14,6 +14,5 @@ steps:
     script: |
       imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
       
-      
-      docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.17.2 --severity CRITICAL python:3.4-alpine
+      docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:0.17.2 --severity CRITICAL --light $imagename
 
