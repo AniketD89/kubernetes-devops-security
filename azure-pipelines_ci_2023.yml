@@ -107,8 +107,8 @@ stages:
            - task: dependency-check-build-task@6
              continueOnError: true
              inputs:
-               projectName: 'SpringBoot'
-               scanPath: '$(System.DefaultWorkingDirectory)'
+               projectName: 'MyScan'
+               scanPath: '$(System.DefaultWorkingDirectory)/src/'
                format: 'ALL'
                failOnCVSS: '5'
                reportsDirectory: '$(Build.ArtifactStagingDirectory)'
