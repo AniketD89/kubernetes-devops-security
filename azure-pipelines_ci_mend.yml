@@ -20,7 +20,7 @@ stages:
 
          - task: dependency-check-build-task@6
            inputs:
-              projectName: 'SpringBootwithNodeJS'
-              scanPath: '$(System.DefaultWorkingDirectory)'
-              format: 'HTML'
-              failOnCVSS: '9.9'
+             projectName: 'SpringBootwithNodeJS'
+             scanPath: '$(System.DefaultWorkingDirectory)'
+             format: 'ALL'
+             failOnCVSS: '5'
