@@ -104,6 +104,18 @@ stages:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
            
+           - task: Maven@4
+             inputs:
+               mavenPomFile: 'pom.xml'
+               goals: 'clean install'
+               options: '-DskipTests=true'
+               publishJUnitResults: false
+               javaHomeOption: 'JDKVersion'
+               mavenVersionOption: 'Default'
+               mavenAuthenticateFeed: false
+               effectivePomSkip: false
+               sonarQubeRunAnalysis: false
+
            - task: dependency-check-build-task@6
              continueOnError: true
              inputs:
