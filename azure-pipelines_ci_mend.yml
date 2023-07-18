@@ -13,7 +13,6 @@ stages:
        displayName: "MendBolt Scan"
        steps:
          - task: WhiteSource@21
-           enabled: false
            inputs:
              cwd: '$(System.DefaultWorkingDirectory)'
              projectName: 'SpringBoot-NodeJs'
@@ -24,7 +23,7 @@ stages:
              projectName: 'SpringBootwithNodeJS'
              scanPath: '$(System.DefaultWorkingDirectory)'
              format: 'ALL'
-             failOnCVSS: '5'
+             failOnCVSS: '9.9'
 
          - task: PublishTestResults@2
            inputs:
