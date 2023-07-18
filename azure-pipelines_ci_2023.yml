@@ -123,6 +123,7 @@ stages:
 
       - job: "Package"
         displayName: "Package into .war file"
+        dependsOn: 'Test'
         steps:
           - task: Maven@4
             enabled: false
