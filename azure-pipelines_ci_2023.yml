@@ -127,7 +127,7 @@ stages:
                
 
            - task: PublishTestResults@2
-             condition: failed('Scan')
+             condition: always()
              inputs:
                testResultsFormat: 'JUnit'
                testResultsFiles: '*dependency-check-junit.xml'
