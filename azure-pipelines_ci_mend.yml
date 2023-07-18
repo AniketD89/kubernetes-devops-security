@@ -24,7 +24,7 @@ stages:
              projectName: 'SpringBootwithNodeJS'
              scanPath: '$(System.DefaultWorkingDirectory)'
              format: 'ALL'
-             failOnCVSS: '9.9'
+             failOnCVSS: '5'
 
          - task: PublishTestResults@2
            inputs:
