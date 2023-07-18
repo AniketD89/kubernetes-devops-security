@@ -4,6 +4,13 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  - stage: "Build"
-    displayName: "Build"
-    jobs:
+  - stage: "Scan"
+    displayName: "Scan"
+    jobs: 
+     - job: "MendBolt"
+       displayName: "MendBolt Scan"
+       steps:
+         - task: WhiteSource@21
+           inputs:
+             cwd: '$(System.DefaultWorkingDirectory)'
+             projectName: 'SpringBoot-NodeJs'
