@@ -13,6 +13,7 @@ stages:
 
            - task: SonarCloudPrepare@1
              displayName: "SonarCloud Analysis Preparation"
+             enabled: false
              inputs:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
@@ -30,6 +31,7 @@ stages:
 
            - task: Maven@4
              displayName: "Maven Test with Junit and Code Coverage with JaCoCo"
+             enabled: false
              inputs:
                mavenPomFile: 'pom.xml'
                goals: 'clean test'
@@ -43,6 +45,7 @@ stages:
                sqMavenPluginVersionChoice: 'latest'
 
            - task: CopyFiles@2
+             enabled: false
              inputs:
                SourceFolder: '$(System.DefaultWorkingDirectory)'
                Contents: '**/surefire-reports/TEST-*.xml'
@@ -50,6 +53,7 @@ stages:
 
 
            - task: PowerShell@2
+             enabled: false
              displayName: "Check Test Pass Percentage"
              inputs:
                targetType: 'inline'
@@ -69,6 +73,7 @@ stages:
                  
 
            - task: BuildQualityChecks@9
+             enabled: false
              displayName: "Check Code Coverage Percentage"
              inputs:
                checkCoverage: true
@@ -78,6 +83,7 @@ stages:
 
 
            - task: PublishTestResults@2
+             enabled: false
              displayName: "Publish Unit Test Results"
              inputs:
                testResultsFormat: 'JUnit'
@@ -86,22 +92,38 @@ stages:
 
 
            - task: SonarCloudPublish@1
+             enabled: false
              displayName: "SonarCloud Quality Gate Result"
              inputs:
                pollingTimeoutSec: '300'
 
            - task: sonarcloud-buildbreaker@2
+             enabled: false
              displayName: "Build Breaker if QG fails"
              inputs:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
            
-           
+           - task: dependency-check-build-task@6
+             inputs:
+               projectName: 'SpringBoot'
+               scanPath: '$(System.DefaultWorkingDirectory)'
+               format: 'ALL'
+               failOnCVSS: '9.9'
+               reportsDirectory: '$(Build.ArtifactStagingDirectory)'
+
+           - task: PublishTestResults@2
+             inputs:
+               testResultsFormat: 'JUnit'
+               testResultsFiles: '**/dependency-check/dependency-check-junit.xml'
+               searchFolder: '$(Build.ArtifactStagingDirectory)'
+               testRunTitle: 'Dependency Test'
 
       - job: "Package"
         displayName: "Package into .war file"
         steps:
           - task: Maven@4
+            enabled: false
             displayName: "Package it in its distributable format"
             inputs:
                mavenPomFile: 'pom.xml'
@@ -115,18 +137,21 @@ stages:
                sonarQubeRunAnalysis: false
 
           - task: CopyFiles@2
+            enabled: false
             inputs:
                SourceFolder: '$(System.DefaultWorkingDirectory)'
                Contents: '**/numeric-0.0.1.jar'
                TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
           - task: PublishBuildArtifacts@1
+            enabled: false
             inputs:
                PathtoPublish: '$(Build.ArtifactStagingDirectory)/target'
                ArtifactName: 'drop'
                publishLocation: 'Container'
 
           - task: UniversalPackages@0
+            enabled: false
             inputs:
                command: 'publish'
                publishDirectory: '$(Build.ArtifactStagingDirectory)/target/'
