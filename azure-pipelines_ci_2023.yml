@@ -117,7 +117,7 @@ stages:
                sonarQubeRunAnalysis: false
 
            - task: dependency-check-build-task@6
-             continueOnError: true
+             displayName: "Scan"
              inputs:
                projectName: 'MyScan'
                scanPath: '$(System.DefaultWorkingDirectory)'
@@ -127,6 +127,7 @@ stages:
                
 
            - task: PublishTestResults@2
+             condition: failed('Scan')
              inputs:
                testResultsFormat: 'JUnit'
                testResultsFiles: '*dependency-check-junit.xml'
