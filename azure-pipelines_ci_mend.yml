@@ -13,6 +13,7 @@ stages:
        displayName: "MendBolt Scan"
        steps:
          - task: WhiteSource@21
+           enabled: false
            inputs:
              cwd: '$(System.DefaultWorkingDirectory)'
              projectName: 'SpringBoot-NodeJs'
@@ -27,6 +28,7 @@ stages:
 
          - task: PublishTestResults@2
            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/junit-*.xml'
-              testRunTitle: 'Dependency Check'
+             testResultsFormat: 'JUnit'
+             testResultsFiles: 'dependency*junit*.xml'
+             searchFolder: 'C:\Aniket\K8-DevSecOps\SelfHosted\_work\1\TestResults\dependency-check\'
+             testRunTitle: 'Dependency Check'
