@@ -120,7 +120,7 @@ stages:
              continueOnError: true
              inputs:
                projectName: 'MyScan'
-               scanPath: '$(System.DefaultWorkingDirectory)/src/'
+               scanPath: '$(System.DefaultWorkingDirectory)'
                format: 'ALL'
                failOnCVSS: '5'
                reportsDirectory: '$(Build.ArtifactStagingDirectory)'
