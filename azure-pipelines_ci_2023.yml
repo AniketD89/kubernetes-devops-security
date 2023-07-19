@@ -180,10 +180,10 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                $tag = git tag
-                $tags = tag[-1]
+                $tags = git tag
+                $tag = $tags[-1]
                 
-                Write-Host "##vso[task.setvariable variable=packagetag]$tags"
+                Write-Host "##vso[task.setvariable variable=packagetag]$tag"
 
           - task: UniversalPackages@0
             enabled: true
