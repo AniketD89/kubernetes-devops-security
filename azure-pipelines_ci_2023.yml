@@ -4,8 +4,8 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  - stage: "Test and Build"
-    displayName: "Test and Build"
+  - stage: "Test_and_Build"
+    displayName: "Test_and_Build"
     jobs:
       -  job: "Test"
          displayName: "Test App"
