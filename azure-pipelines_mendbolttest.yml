@@ -10,3 +10,10 @@ steps:
       echo Write your commands here
       
       echo Hello world
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $tags = git tag
+      $tags
