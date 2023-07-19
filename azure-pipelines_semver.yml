@@ -11,7 +11,7 @@ steps:
   
   - task: gitversion/execute@0
     inputs:
-      targetPath: '$(DefaultWorkingDirectory)'
+      targetPath: '$(System.DefaultWorkingDirectory)'
   
   - task: CmdLine@2
     inputs:
