@@ -4,8 +4,8 @@ pool:
   vmImage: ubuntu-latest
 
 stages:
-  - stage: "Build"
-    displayName: "Build"
+  - stage: "Test and Build"
+    displayName: "Test and Build"
     jobs:
       -  job: "Test"
          displayName: "Test App"
@@ -104,36 +104,45 @@ stages:
                SonarCloud: 'SonarSconn'
                organization: 'mydemoado1'
            
-           - task: Maven@4
-             inputs:
-               mavenPomFile: 'pom.xml'
-               goals: 'clean package'
-               options: '-DskipTests=true'
-               publishJUnitResults: false
-               javaHomeOption: 'JDKVersion'
-               mavenVersionOption: 'Default'
-               mavenAuthenticateFeed: false
-               effectivePomSkip: false
-               sonarQubeRunAnalysis: false
 
-           - task: dependency-check-build-task@6
-             displayName: "Scan"
-             inputs:
-               projectName: 'MyScan'
-               scanPath: '$(System.DefaultWorkingDirectory)'
-               format: 'ALL'
-               failOnCVSS: '5'
-               reportsDirectory: '$(Build.ArtifactStagingDirectory)'
-               
 
-           - task: PublishTestResults@2
-             condition: always()
-             inputs:
-               testResultsFormat: 'JUnit'
-               testResultsFiles: '*dependency-check-junit.xml'
-               searchFolder: '$(Build.ArtifactStagingDirectory)'
-               testRunTitle: 'Dependency Test'
+      - job: "Scan"
+        displayName: "Docker Image Scan"
+        dependsOn: 'Test'
+        steps:     
+         - task: DockerInstaller@0
+           displayName: "Docker Installation"
+           inputs:
+              dockerVersion: '17.09.0-ce'
 
+         - task: CmdLine@2
+           displayName: "Image Scan using  Tivy Container"
+           inputs:
+              script: |
+                imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
+                docker run --rm -v $(pwd)/.trivyignore:/work/.trivyignore -w /work -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 0 --severity CRITICAL --light $imagename
+
+
+         - task: CmdLine@2
+           displayName: 'Image Scan using Clair'
+           inputs:
+              script: |
+                imagename=$(awk 'NR==1 {print $2}' Dockerfile)
+                
+                sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v12/clair-scanner_linux_amd64 -o /usr/bin/clair-scanner
+                
+                sudo chmod +x /usr/bin/clair-scanner
+                
+                docker run -p 5432:5432 -d --name db arminc/clair-db:latest
+                
+                docker run -p 6060:6060 --link db:postgres -d --name clair arminc/clair-local-scan:latest
+                
+                docker pull $imagename
+                
+                clair-scanner --reportAll=false -w whitelist.yaml --threshold='Critical' --ip 172.17.0.1 $imagename
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+ 
       - job: "Package"
         displayName: "Package into .war file"
         dependsOn: 'Test'
@@ -175,6 +184,9 @@ stages:
                vstsFeedPublish: '545dde5f-5bea-4cde-8e74-74e78a4710b3/337d99bd-18b3-4cd6-984f-b3c7f5ef2812'
                vstsFeedPackagePublish: 'numeric.jar'
                versionOption: 'patch'
+
+      
+          
 
 
   - stage: "Deployment"
