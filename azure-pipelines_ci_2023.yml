@@ -145,10 +145,10 @@ stages:
  
       - job: "Package"
         displayName: "Package into .war file"
-        dependsOn: 'Test'
+        dependsOn: 'Scan'
         steps:
           - task: Maven@4
-            enabled: false
+            enabled: true
             displayName: "Package it in its distributable format"
             inputs:
                mavenPomFile: 'pom.xml'
