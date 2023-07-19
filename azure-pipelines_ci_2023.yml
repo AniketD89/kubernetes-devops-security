@@ -5,7 +5,7 @@ pool:
 
 stages:
   - stage: "Test_and_Build"
-    displayName: "Test_and_Build"
+    displayName: "Test and Build"
     jobs:
       -  job: "Test"
          displayName: "Test App"
@@ -190,7 +190,7 @@ stages:
 
 
   - stage: "Deployment"
-    dependsOn: "Build"
+    dependsOn: "Test_and_Build"
     displayName: "Deployment"
     jobs:
       
