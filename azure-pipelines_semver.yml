@@ -4,13 +4,10 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+  - task: gitversion/setup@0
+    inputs:
+      versionSpec: '5.3.x'
 
-- task: gitversion/setup@0
-  inputs:
-    preferLatestVersion: true
-
-- task: gitversion/execute@0
-
-- script: echo current version is $(GitVersion.SemVer)
+  - task: gitversion/execute@0
+  
+  - script: echo current version is $(GitVersion.SemVer)
