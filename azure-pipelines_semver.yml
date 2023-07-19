@@ -1,32 +1,26 @@
-trigger: none
+trigger:
+- feature*
 
 pool:
   vmImage: ubuntu-latest
 
-
 steps:
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo Write your commands here
+      
+      echo Hello world
 
-  - task: UseDotNet@2
-    inputs:
-      packageType: 'runtime'
-      version: '3.x'
-      includePreviewVersions: true
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $tag = git tag
+      $tags = $tag[-1]
+      
+      Write-Host "##vso[task.setvariable variable=packagetag]$tags"
 
-  - task: UseDotNet@2
-    inputs:
-      packageType: 'runtime'
-      version: '6.x'
-      includePreviewVersions: true
-
-
-  - task: gitversion/setup@0
-    inputs:
-      versionSpec: '5.12.0'
-  
-  - task: gitversion/execute@0
-    inputs:
-      targetPath: '$(System.DefaultWorkingDirectory)'
-  
-  - task: CmdLine@2
-    inputs:
-      script: 'echo current version is $(GitVersion.SemVer)'
+- task: CmdLine@2
+  inputs:
+    script: 'echo  git tag value is $(packagetag)'
