@@ -178,12 +178,13 @@ stages:
           - task: UniversalPackages@0
             enabled: true
             inputs:
-               command: 'publish'
-               publishDirectory: '$(Build.ArtifactStagingDirectory)/target/'
-               feedsToUsePublish: 'internal'
-               vstsFeedPublish: '545dde5f-5bea-4cde-8e74-74e78a4710b3/337d99bd-18b3-4cd6-984f-b3c7f5ef2812'
-               vstsFeedPackagePublish: 'numeric.jar'
-               versionOption: 'patch'
+              command: 'publish'
+              publishDirectory: '$(Build.ArtifactStagingDirectory)/target/'
+              feedsToUsePublish: 'internal'
+              vstsFeedPublish: '545dde5f-5bea-4cde-8e74-74e78a4710b3/337d99bd-18b3-4cd6-984f-b3c7f5ef2812'
+              vstsFeedPackagePublish: 'numeric.jar'
+              versionOption: 'custom'
+              versionPublish: '$(version)'
 
       
           
