@@ -11,6 +11,14 @@ steps:
       packageType: 'runtime'
       version: '3.x'
       includePreviewVersions: true
+
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'runtime'
+      version: 6.x'
+      includePreviewVersions: true
+
+
   - task: gitversion/setup@0
     inputs:
       versionSpec: '5.12.0'
