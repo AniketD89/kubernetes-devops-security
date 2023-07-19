@@ -50,6 +50,11 @@ stages:
         displayName: "Clair Scan Using Clair Installation"
         steps:
 
+          - task: DockerInstaller@0
+            displayName: "Docker Installation"
+            inputs:
+              dockerVersion: '17.09.0-ce'
+
           - task: CmdLine@2
             displayName: 'Image Scan using Clair'
             inputs:
