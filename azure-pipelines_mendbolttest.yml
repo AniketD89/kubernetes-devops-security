@@ -4,7 +4,9 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: WhiteSource@21
+- task: CmdLine@2
   inputs:
-    cwd: '$(System.DefaultWorkingDirectory)'
-    projectName: 'MyProj'
+    script: |
+      echo Write your commands here
+      
+      echo Hello world
