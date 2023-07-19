@@ -40,8 +40,3 @@ stages:
                 
                 trivy -q image --severity CRITICAL --light $imagename
               workingDirectory: '$(System.DefaultWorkingDirectory)'
-            
-      - job: "Trivy_Scan3"
-        displayName: "Trivy Scan using Trivy Task"
-        steps:
-        
