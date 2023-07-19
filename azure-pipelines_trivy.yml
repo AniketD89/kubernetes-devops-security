@@ -69,6 +69,8 @@ stages:
                 docker run -p 5432:5432 -d --name db arminc/clair-db:latest
                 
                 docker run -p 6060:6060 --link db:postgres -d --name clair arminc/clair-local-scan:latest
+
+                docker pull $imagename
                 
                 clair-scanner -r php-report.json --ip 172.17.0.1 $imagename
               workingDirectory: '$(System.DefaultWorkingDirectory)'
