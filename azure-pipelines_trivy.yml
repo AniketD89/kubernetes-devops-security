@@ -21,7 +21,7 @@ stages:
             inputs:
               script: |
                 imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
-                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 0 --severity CRITICAL,HIGH --light $imagename
+                docker run --rm -v $(pwd)/.trivyignore:/work/.trivyignore -w /work -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 1 --severity CRITICAL --light $imagename
 
       - job: "Trivy_Scan2"
         dependsOn: 'Trivy_Scan1'
@@ -41,7 +41,7 @@ stages:
               script: |
                 imagename=$(awk 'NR==1 {print $2}' Dockerfile)
                 
-                trivy -q image --exit-code 0 --severity CRITICAL,LOW --light $imagename
+                trivy -q image --exit-code 0 --severity CRITICAL --light $imagename
               workingDirectory: '$(System.DefaultWorkingDirectory)'
 
 
@@ -69,8 +69,8 @@ stages:
                 docker run -p 5432:5432 -d --name db arminc/clair-db:latest
                 
                 docker run -p 6060:6060 --link db:postgres -d --name clair arminc/clair-local-scan:latest
-
+                
                 docker pull $imagename
                 
-                clair-scanner -r php-report.json --ip 172.17.0.1 $imagename
+                clair-scanner -w whitelist.yaml --ip 172.17.0.1 $imagename
               workingDirectory: '$(System.DefaultWorkingDirectory)'
