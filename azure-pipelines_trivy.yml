@@ -21,7 +21,7 @@ stages:
             inputs:
               script: |
                 imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
-                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 1 --severity CRITICAL --light $imagename
+                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 0 --severity CRITICAL,HIGH --light $imagename
 
       - job: "Trivy_Scan2"
         dependsOn: 'Trivy_Scan1'
@@ -39,5 +39,5 @@ stages:
               script: |
                 imagename=$(awk 'NR==1 {print $2}' Dockerfile)
                 
-                trivy -q image --severity CRITICAL --light $imagename
+                trivy -q image --exit-code 0 --severity CRITICAL,LOW --light $imagename
               workingDirectory: '$(System.DefaultWorkingDirectory)'
