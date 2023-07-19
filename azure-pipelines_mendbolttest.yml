@@ -16,7 +16,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $tags = git describe --tags --abbrev=0
+      $tag = git tag
+      $tags = tag[-1]
       
       Write-Host "##vso[task.setvariable variable=packagetag]$tags"
 
