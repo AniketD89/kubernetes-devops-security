@@ -7,7 +7,7 @@ pool:
 steps:
   - task: gitversion/setup@0
     inputs:
-      versionSpec: '5.3.x'
+      preferLatestVersion: true
   
   - task: gitversion/execute@0
     inputs:
