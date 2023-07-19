@@ -44,15 +44,21 @@ stages:
                 trivy -q image --exit-code 0 --severity CRITICAL,LOW --light $imagename
               workingDirectory: '$(System.DefaultWorkingDirectory)'
 
+
+      - job: "Clair_Scan"
+        dependsOn: 'Trivy_Scan2'
+        displayName: "Clair Scan Using Clair Installation"
+        steps:
+
           - task: CmdLine@2
             displayName: 'Image Scan using Clair'
             inputs:
               script: |
                 imagename=$(awk 'NR==1 {print $2}' Dockerfile)
                 
-                curl -L https://github.com/arminc/clair-scanner/releases/download/v12/clair-scanner_linux_amd64 -o /usr/bin/clair-scanner
+                sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v12/clair-scanner_linux_amd64 -o /usr/bin/clair-scanner
                 
-                chmod +x /usr/bin/clair-scanner
+                sudo chmod +x /usr/bin/clair-scanner
                 
                 
                 docker run -p 5432:5432 -d --name db arminc/clair-db:latest
