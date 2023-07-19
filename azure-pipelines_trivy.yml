@@ -3,16 +3,45 @@ trigger: none
 pool:
   vmImage: ubuntu-latest
 
-steps:
 
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '17.09.0-ce'
+stages:
+  - stage: "Build"
+    displayName: "Build"
+    jobs:
+      -  job: "Trivy_Scan1"
+         displayName: "Trivy Scan using Container Image"
+         steps:
+          - task: DockerInstaller@0
+            displayName: "Docker Installation"
+            inputs:
+              dockerVersion: '17.09.0-ce'
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
-      
-      docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 1 --severity CRITICAL --light $imagename
+          - task: CmdLine@2
+            displayName: "Trivy Scan using Container Image"
+            inputs:
+              script: |
+                imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
+                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 1 --severity CRITICAL --light $imagename
 
+      - job: "Trivy_Scan2"
+        displayName: "Trivy Scan using Trivy Installation"
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: |
+                wget https://github.com/aquasecurity/trivy/releases/download/v0.43.1/trivy_0.43.1_Linux-64bit.deb
+                
+                sudo dpkg -i trivy_0.43.1_Linux-64bit.deb
+          
+          - task: CmdLine@2
+            inputs:
+              script: |
+                imagename=$(awk 'NR==1 {print $2}' Dockerfile)
+                
+                trivy -q image --severity CRITICAL --light $imagename
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+            
+      - job: "Trivy_Scan3"
+        displayName: "Trivy Scan using Trivy Task"
+        steps:
+        
