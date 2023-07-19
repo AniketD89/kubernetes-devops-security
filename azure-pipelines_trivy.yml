@@ -25,9 +25,10 @@ stages:
 
       - job: "Trivy_Scan2"
         dependsOn: 'Trivy_Scan1'
-        displayName: "Trivy Scan using Trivy Installation"
+        displayName: "Trivy Scan Using Trivy Installation"
         steps:
           - task: CmdLine@2
+            displayName: "Trivy Installation"
             inputs:
               script: |
                 wget https://github.com/aquasecurity/trivy/releases/download/v0.43.1/trivy_0.43.1_Linux-64bit.deb
@@ -35,6 +36,7 @@ stages:
                 sudo dpkg -i trivy_0.43.1_Linux-64bit.deb
           
           - task: CmdLine@2
+            displayName: "Trivy Scan"
             inputs:
               script: |
                 imagename=$(awk 'NR==1 {print $2}' Dockerfile)
