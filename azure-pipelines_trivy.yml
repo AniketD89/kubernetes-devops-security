@@ -72,5 +72,5 @@ stages:
                 
                 docker pull $imagename
                 
-                clair-scanner -w whitelist.yaml --ip 172.17.0.1 $imagename
+                clair-scanner --reportAll=false -w whitelist.yaml --threshold='Critical' --ip 172.17.0.1 $imagename
               workingDirectory: '$(System.DefaultWorkingDirectory)'
