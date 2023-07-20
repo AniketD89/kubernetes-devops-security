@@ -1,0 +1,28 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- checkout: none
+
+
+- task: DownloadPackage@1
+  displayName: "Download the Maven Package"
+  inputs:
+    packageType: 'maven'
+    feed: '545dde5f-5bea-4cde-8e74-74e78a4710b3/5d424f24-062c-44d5-aa68-8889e30203c5'
+    view: '6bbb2f16-0d50-423e-931b-ff7da26ad728'
+    definition: 'ce659f9b-068b-44e0-a83f-c36ac55da912'
+    version: '0.0.1'
+    downloadPath: '$(System.ArtifactsDirectory)/mypackage'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: "Deploy package"
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Pay-As-You-Go(36e5119a-ef0e-4643-a46a-4a137216c264)'
+    appType: 'webAppLinux'
+    WebAppName: 'mvnappnumeric'
+    packageForLinux: '$(System.ArtifactsDirectory)/mypackage'
