@@ -15,6 +15,7 @@ steps:
   inputs:
     mavenPomFile: 'pom.xml'
     goals: 'deploy'
+    options: '-DaltDeploymentRepository=MavenPackageDeploy::default::https://pkgs.dev.azure.com/MyDemoADO/SpringBoot-NodeJs/_packaging/MavenPackageDeploy/maven/v1'
     publishJUnitResults: false
     javaHomeOption: 'JDKVersion'
     mavenVersionOption: 'Default'
