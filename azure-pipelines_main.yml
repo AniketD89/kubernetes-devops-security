@@ -1,0 +1,229 @@
+trigger: 'none'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: "Test_and_Build"
+    displayName: "Test and Build"
+    jobs:
+      -  job: "Test"
+         displayName: "Test App"
+         steps:
+
+           - task: SonarCloudPrepare@1
+             displayName: "SonarCloud Analysis Preparation"
+             enabled: true
+             inputs:
+               SonarCloud: 'SonarSconn'
+               organization: 'mydemoado1'
+               scannerMode: 'Other'
+               extraProperties: |
+                 # Additional properties that will be passed to the scanner, 
+                 # Put one key=value per line, example:
+                 # sonar.exclusions=**/*.bin
+                 
+                 sonar.projectKey=MyDemoADO_SpringBoot-NodeJs
+                 sonar.projectName=SpringBoot-NodeJs
+                 sonar.scanner.metadataFilePath=$(Agent.TempDirectory)/sonar/$(Build.BuildNumber)/test/report-task.txt
+                
+              
+
+           - task: Maven@4
+             displayName: "Maven Test with Junit and Code Coverage with JaCoCo"
+             enabled: true
+             inputs:
+               mavenPomFile: 'pom.xml'
+               goals: 'clean test'
+               publishJUnitResults: false
+               codeCoverageToolOption: 'JaCoCo'
+               javaHomeOption: 'JDKVersion'
+               mavenVersionOption: 'Default'
+               mavenAuthenticateFeed: false
+               effectivePomSkip: false
+               sonarQubeRunAnalysis: true
+               sqMavenPluginVersionChoice: 'latest'
+
+           - task: CopyFiles@2
+             enabled: true
+             inputs:
+               SourceFolder: '$(System.DefaultWorkingDirectory)'
+               Contents: '**/surefire-reports/TEST-*.xml'
+               TargetFolder: '$(Build.ArtifactStagingDirectory)' 
+
+
+           - task: PowerShell@2
+             enabled: true
+             displayName: "Check Test Pass Percentage"
+             inputs:
+               targetType: 'inline'
+               script: |
+                 [xml]$xml= Get-Content $(build.artifactstagingdirectory)\target\surefire-reports\TEST-com.devsecops.NumericApplicationTests.xml
+                 $failures= $xml.testsuite.failures
+                 $tests= $xml.testsuite.tests
+                 $passpercent=[Math]::Abs(($failures/$tests - 1)*100)
+                 
+                 $passpercent
+                 
+                 If($passpercent -lt 90)
+                 {
+                 Write-host "Threshold Breached.Exit 1"
+                 EXIT 1
+                 }
+                 
+
+           - task: BuildQualityChecks@9
+             enabled: true
+             displayName: "Check Code Coverage Percentage"
+             inputs:
+               checkCoverage: true
+               coverageFailOption: 'fixed'
+               coverageType: 'lines'
+               coverageThreshold: '60'
+
+
+           - task: PublishTestResults@2
+             enabled: true
+             displayName: "Publish Unit Test Results"
+             inputs:
+               testResultsFormat: 'JUnit'
+               testResultsFiles: '**/surefire-reports/TEST-*.xml'
+               failTaskOnFailedTests: true
+
+
+           - task: SonarCloudPublish@1
+             enabled: true
+             displayName: "SonarCloud Quality Gate Result"
+             inputs:
+               pollingTimeoutSec: '300'
+
+           - task: sonarcloud-buildbreaker@2
+             enabled: true
+             displayName: "Build Breaker if QG fails"
+             inputs:
+               SonarCloud: 'SonarSconn'
+               organization: 'mydemoado1'
+           
+
+
+      - job: "Scan"
+        displayName: "Docker Image Scan"
+        dependsOn: 'Test'
+        steps:     
+         - task: DockerInstaller@0
+           displayName: "Docker Installation"
+           inputs:
+              dockerVersion: '17.09.0-ce'
+
+         - task: CmdLine@2
+           displayName: "Image Scan using  Tivy Container"
+           inputs:
+              script: |
+                imagename=$(awk 'NR==1 {print $2}' Dockerfile)      
+                docker run --rm -v $(pwd)/.trivyignore:/work/.trivyignore -w /work -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy -q image --exit-code 0 --severity CRITICAL --light $imagename
+
+
+         - task: CmdLine@2
+           displayName: 'Image Scan using Clair'
+           inputs:
+              script: |
+                imagename=$(awk 'NR==1 {print $2}' Dockerfile)
+                
+                sudo curl -L https://github.com/arminc/clair-scanner/releases/download/v12/clair-scanner_linux_amd64 -o /usr/bin/clair-scanner
+                
+                sudo chmod +x /usr/bin/clair-scanner
+                
+                docker run -p 5432:5432 -d --name db arminc/clair-db:latest
+                
+                docker run -p 6060:6060 --link db:postgres -d --name clair arminc/clair-local-scan:latest
+                
+                docker pull $imagename
+                
+                clair-scanner --reportAll=false -w whitelist.yaml --threshold='Critical' --ip 172.17.0.1 $imagename
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+ 
+      - job: "Package"
+        displayName: "Package into .war file"
+        dependsOn: 'Scan'
+        steps:
+          - task: Maven@4
+            enabled: true
+            displayName: "Package it in its distributable format"
+            inputs:
+               mavenPomFile: 'pom.xml'
+               goals: 'clean package'
+               options: '-DskipTests=true'
+               publishJUnitResults: false
+               javaHomeOption: 'JDKVersion'
+               mavenVersionOption: 'Default'
+               mavenAuthenticateFeed: false
+               effectivePomSkip: false
+               sonarQubeRunAnalysis: false
+
+          - task: CopyFiles@2
+            enabled: true
+            inputs:
+               SourceFolder: '$(System.DefaultWorkingDirectory)'
+               Contents: '**/numeric-0.0.1.jar'
+               TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+          - task: PublishBuildArtifacts@1
+            enabled: true
+            inputs:
+               PathtoPublish: '$(Build.ArtifactStagingDirectory)/target'
+               ArtifactName: 'drop'
+               publishLocation: 'Container'
+
+
+          - task: PowerShell@2
+            inputs:
+              targetType: 'inline'
+              script: |
+                $tags = git tag
+                $tag = $tags[-1]
+                
+                Write-Host "##vso[task.setvariable variable=packagetag]$tag"
+
+          - task: UniversalPackages@0
+            enabled: true
+            inputs:
+              command: 'publish'
+              publishDirectory: '$(Build.ArtifactStagingDirectory)/target/'
+              feedsToUsePublish: 'internal'
+              vstsFeedPublish: '545dde5f-5bea-4cde-8e74-74e78a4710b3/337d99bd-18b3-4cd6-984f-b3c7f5ef2812'
+              vstsFeedPackagePublish: 'numeric.jar'
+              versionOption: 'custom'
+              versionPublish: '$(packagetag)'
+
+      
+          
+
+
+  - stage: "Deployment"
+    dependsOn: "Test_and_Build"
+    displayName: "Deployment"
+    jobs:
+      
+
+      - job: "Approval"
+        pool: server
+
+        steps:
+          
+          - task: ManualValidation@0
+            timeoutInMinutes: 1
+            displayName: "Deployment Validation"
+            inputs:
+              notifyUsers: 'aniket.p.deshmukh@gmail.com'
+              instructions: 'Please validate the build $(Build.BuildId) configuration and resume'
+              onTimeout: 'resume'
+
+
+      - job: "Test_Deployment"
+        displayName: "Deployment to Test Env"
+        dependsOn: "Approval"
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: 'echo Test Env'
